@@ -1,9 +1,31 @@
 import Link from "next/link"
-import { Plus, Search, Filter } from "lucide-react"
+import { Plus } from "lucide-react"
 import { prisma } from "@/lib/prisma"
+import { AssetFilters } from "@/components/asset-filters"
+import { Prisma } from "@prisma/client"
 
-async function getAssets() {
+// 1. Update getAssets to accept filters
+async function getAssets(
+  search?: string,
+  assetTypeId?: string,
+  status?: string
+) {
+  const where: Prisma.AssetWhereInput = {
+    // Search by name (case-insensitive contains)
+    ...(search && {
+      name: {
+        contains: search,
+        // mode: 'insensitive', // Uncomment if your DB supports it (Postgres/Mongo). SQLite defaults to case-insensitive for ASCII.
+      },
+    }),
+    // Filter by Type
+    ...(assetTypeId && { assetTypeId }),
+    // Filter by Status
+    ...(status && { status }),
+  }
+
   return prisma.asset.findMany({
+    where,
     include: {
       assetType: true,
       createdBy: true,
@@ -14,21 +36,36 @@ async function getAssets() {
   })
 }
 
-export default async function AssetsPage() {
-  const assets = await getAssets()
+async function getAssetTypes() {
+  return prisma.assetType.findMany({
+    orderBy: { name: "asc" },
+  })
+}
+
+// 2. Update Page Props to receive searchParams
+export default async function AssetsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>
+}) {
+  const params = await searchParams
+  const search = params.search
+  const assetTypeId = params.assetTypeId
+  const status = params.status
+
+  // 3. Fetch data in parallel
+  const [assets, assetTypes] = await Promise.all([
+    getAssets(search, assetTypeId, status),
+    getAssetTypes(),
+  ])
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800"
-      case "inactive":
-        return "bg-gray-100 text-gray-800"
-      case "maintenance":
-        return "bg-yellow-100 text-yellow-800"
-      case "retired":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
+      case "active": return "bg-green-100 text-green-800"
+      case "inactive": return "bg-gray-100 text-gray-800"
+      case "maintenance": return "bg-yellow-100 text-yellow-800"
+      case "retired": return "bg-red-100 text-red-800"
+      default: return "bg-gray-100 text-gray-800"
     }
   }
 
@@ -49,21 +86,9 @@ export default async function AssetsPage() {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        {/* 4. Insert the Filter Component here */}
         <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search assets..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Filter className="h-5 w-5" />
-              <span>Filter</span>
-            </button>
-          </div>
+          <AssetFilters assetTypes={assetTypes} />
         </div>
 
         <div className="overflow-x-auto">
@@ -95,13 +120,19 @@ export default async function AssetsPage() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                     <p className="text-lg font-medium">No assets found</p>
-                    <p className="mt-2 text-sm">Get started by creating your first asset</p>
-                    <Link
-                      href="/assets/new"
-                      className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    >
-                      Create Asset
-                    </Link>
+                    <p className="mt-2 text-sm">
+                      {search || assetTypeId || status 
+                        ? "Try adjusting your filters" 
+                        : "Get started by creating your first asset"}
+                    </p>
+                    {!(search || assetTypeId || status) && (
+                      <Link
+                        href="/assets/new"
+                        className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        Create Asset
+                      </Link>
+                    )}
                   </td>
                 </tr>
               ) : (

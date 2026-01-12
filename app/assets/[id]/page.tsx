@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Edit, Trash2, Network } from "lucide-react"
+import { ArrowLeft, Edit, Network } from "lucide-react" // Removed Trash2, it's inside the button component
 import { prisma } from "@/lib/prisma"
+import { DeleteAssetButton } from "@/components/delete-asset-button" // Import the new component
 
 async function getAsset(id: string) {
   return prisma.asset.findUnique({
@@ -12,18 +13,14 @@ async function getAsset(id: string) {
       relationships: {
         include: {
           targetAsset: {
-            include: {
-              assetType: true,
-            },
+            include: { assetType: true },
           },
         },
       },
       relationshipsTo: {
         include: {
           sourceAsset: {
-            include: {
-              assetType: true,
-            },
+            include: { assetType: true },
           },
         },
       },
@@ -43,16 +40,11 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800"
-      case "inactive":
-        return "bg-gray-100 text-gray-800"
-      case "maintenance":
-        return "bg-yellow-100 text-yellow-800"
-      case "retired":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
+      case "active": return "bg-green-100 text-green-800"
+      case "inactive": return "bg-gray-100 text-gray-800"
+      case "maintenance": return "bg-yellow-100 text-yellow-800"
+      case "retired": return "bg-red-100 text-red-800"
+      default: return "bg-gray-100 text-gray-800"
     }
   }
 
@@ -72,13 +64,7 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Link
-            href={`/assets/${asset.id}/edit`}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            <Edit className="h-4 w-4" />
-            <span>Edit</span>
-          </Link>
+          {/* View Graph Button */}
           <Link
             href={`/graph?asset=${asset.id}`}
             className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
@@ -86,10 +72,24 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
             <Network className="h-4 w-4" />
             <span>View Graph</span>
           </Link>
+
+          {/* Edit Button */}
+          <Link
+            href={`/assets/${asset.id}/edit`}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+          >
+            <Edit className="h-4 w-4" />
+            <span>Edit</span>
+          </Link>
+
+          {/* New Delete Button */}
+          <DeleteAssetButton assetId={asset.id} assetName={asset.name} />
         </div>
       </div>
 
+      {/* ... rest of the existing detail view code ... */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ... keep the rest of your JSX unchanged ... */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Details</h2>
@@ -97,11 +97,7 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
               <div>
                 <dt className="text-sm font-medium text-gray-500">Status</dt>
                 <dd className="mt-1">
-                  <span
-                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                      asset.status
-                    )}`}
-                  >
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(asset.status)}`}>
                     {asset.status}
                   </span>
                 </dd>
@@ -142,24 +138,17 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
               </dl>
             </div>
           )}
-
+          
+          {/* ... Relationships section ... */}
           {asset.relationships.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Relationships</h2>
               <div className="space-y-3">
                 {asset.relationships.map((rel) => (
-                  <div
-                    key={rel.id}
-                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
-                  >
+                  <div key={rel.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {rel.relationType.replace(/_/g, " ")}
-                      </p>
-                      <Link
-                        href={`/assets/${rel.targetAsset.id}`}
-                        className="text-sm text-blue-600 hover:text-blue-800"
-                      >
+                      <p className="text-sm font-medium text-gray-900">{rel.relationType.replace(/_/g, " ")}</p>
+                      <Link href={`/assets/${rel.targetAsset.id}`} className="text-sm text-blue-600 hover:text-blue-800">
                         {rel.targetAsset.name} ({rel.targetAsset.assetType.name})
                       </Link>
                     </div>
@@ -194,15 +183,11 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
             <dl className="space-y-3">
               <div className="flex justify-between">
                 <dt className="text-sm text-gray-500">Outgoing Relations</dt>
-                <dd className="text-sm font-medium text-gray-900">
-                  {asset.relationships.length}
-                </dd>
+                <dd className="text-sm font-medium text-gray-900">{asset.relationships.length}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-sm text-gray-500">Incoming Relations</dt>
-                <dd className="text-sm font-medium text-gray-900">
-                  {asset.relationshipsTo.length}
-                </dd>
+                <dd className="text-sm font-medium text-gray-900">{asset.relationshipsTo.length}</dd>
               </div>
             </dl>
           </div>
