@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User and Authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("user") // admin, user, viewer
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assets          Asset[]
+  createdTickets  Ticket[]   @relation("CreatedBy")
+  assignedTickets Ticket[]   @relation("AssignedTo")
+  comments        Comment[]
+  activities      Activity[]
+}
+
+// Customizable Asset Types (like DataGerry)
+model AssetType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  fields      String // JSON string of field definitions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assets Asset[]
+}
+
+// Assets/Configuration Items
+model Asset {
+  id          String   @id @default(cuid())
+  name        String
+  assetTypeId String
+  status      String   @default("active") // active, inactive, maintenance, retired
+  data        String // JSON string of custom fields
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assetType       AssetType       @relation(fields: [assetTypeId], references: [id], onDelete: Cascade)
+  createdBy       User            @relation(fields: [createdById], references: [id])
+  relationships   AssetRelation[] @relation("SourceAsset")
+  relationshipsTo AssetRelation[] @relation("TargetAsset")
+  tickets         Ticket[]
+  comments        Comment[]
+  activities      Activity[]
+  documents       Document[]
+
+  @@index([assetTypeId])
+  @@index([status])
+}
+
+// Asset Relationships (for Graph visualization)
+model AssetRelation {
+  id           String   @id @default(cuid())
+  sourceId     String
+  targetId     String
+  relationType String // depends_on, contains, connects_to, etc.
+  description  String?
+  createdAt    DateTime @default(now())
+
+  sourceAsset Asset @relation("SourceAsset", fields: [sourceId], references: [id], onDelete: Cascade)
+  targetAsset Asset @relation("TargetAsset", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, targetId, relationType])
+  @@index([sourceId])
+  @@index([targetId])
+}
+
+// Service Desk / Tickets (like GLPI)
+model Ticket {
+  id           String    @id @default(cuid())
+  title        String
+  description  String
+  status       String    @default("open") // open, in_progress, resolved, closed
+  priority     String    @default("medium") // low, medium, high, critical
+  category     String?
+  createdById  String
+  assignedToId String?
+  assetId      String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  resolvedAt   DateTime?
+
+  createdBy  User       @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedTo User?      @relation("AssignedTo", fields: [assignedToId], references: [id])
+  asset      Asset?     @relation(fields: [assetId], references: [id])
+  comments   Comment[]
+  activities Activity[]
+
+  @@index([status])
+  @@index([createdById])
+  @@index([assignedToId])
+}
+
+// Comments on Assets and Tickets
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  assetId   String?
+  ticketId  String?
+  createdAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id])
+  asset  Asset?  @relation(fields: [assetId], references: [id])
+  ticket Ticket? @relation(fields: [ticketId], references: [id])
+
+  @@index([assetId])
+  @@index([ticketId])
+}
+
+// Activity Log
+model Activity {
+  id         String   @id @default(cuid())
+  action     String // created, updated, deleted, etc.
+  entityType String // asset, ticket, etc.
+  entityId   String
+  userId     String
+  assetId    String?
+  ticketId   String?
+  details    String? // JSON string of change details
+  createdAt  DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id])
+  asset  Asset?  @relation(fields: [assetId], references: [id])
+  ticket Ticket? @relation(fields: [ticketId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+// Documents/Attachments
+model Document {
+  id          String   @id @default(cuid())
+  name        String
+  fileName    String
+  filePath    String
+  mimeType    String
+  size        Int
+  assetId     String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  asset Asset? @relation(fields: [assetId], references: [id])
+
+  @@index([assetId])
+}
