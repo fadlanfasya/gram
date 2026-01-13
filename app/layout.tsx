@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Providers } from "@/components/providers";
 import { Navigation } from "@/components/navigation"; // Assuming you have a Navigation component
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,22 +20,24 @@ export default function RootLayout({
   return (
     // suppressHydrationWarning is required for next-themes
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="min-h-screen flex flex-col">
-            {/* If you have a top nav, it goes here */}
-            <Navigation /> 
-            
-            <main className="flex-1 container mx-auto px-4 py-8">
-              {children}
-            </main>
-          </div>
-        </ThemeProvider>
+      <body className={`${inter.className} bg-background text-foreground transition-colors duration-200`}>
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="min-h-screen flex flex-col">
+              {/* If you have a top nav, it goes here */}
+              <Navigation />
+
+              <main className="flex-1 container mx-auto px-4 py-8">
+                {children}
+              </main>
+            </div>
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

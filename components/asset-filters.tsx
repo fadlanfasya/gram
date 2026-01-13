@@ -56,23 +56,23 @@ export function AssetFilters({ assetTypes }: AssetFiltersProps) {
       <div className="flex items-center space-x-4">
         {/* Search Input */}
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search assets..."
             defaultValue={currentSearch}
             onChange={(e) => handleSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
           />
         </div>
 
         {/* Filter Toggle Button */}
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center space-x-2 px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors ${
+          className={`flex items-center space-x-2 px-4 py-2 border rounded-lg transition-colors ${
             hasActiveFilters || showFilters
-              ? "border-blue-500 text-blue-600 bg-blue-50"
-              : "border-gray-300 text-gray-700"
+              ? "border-primary text-primary bg-primary/10"
+              : "border-input text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           }`}
         >
           <Filter className="h-5 w-5" />
@@ -82,15 +82,15 @@ export function AssetFilters({ assetTypes }: AssetFiltersProps) {
 
       {/* Expandable Filter Panel */}
       {showFilters && (
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in slide-in-from-top-2">
+        <div className="bg-muted/50 p-4 rounded-lg border border-border grid grid-cols-1 md:grid-cols-3 gap-4 animate-in slide-in-from-top-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Asset Type
             </label>
             <select
               value={currentType}
               onChange={(e) => handleFilterChange("assetTypeId", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             >
               <option value="">All Types</option>
               {assetTypes.map((type) => (
@@ -102,13 +102,13 @@ export function AssetFilters({ assetTypes }: AssetFiltersProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               Status
             </label>
             <select
               value={currentStatus}
               onChange={(e) => handleFilterChange("status", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             >
               <option value="">All Statuses</option>
               <option value="active">Active</option>
@@ -122,7 +122,7 @@ export function AssetFilters({ assetTypes }: AssetFiltersProps) {
             <button
               onClick={clearFilters}
               disabled={!hasActiveFilters && !currentSearch}
-              className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50"
+              className="flex items-center space-x-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground disabled:opacity-50"
             >
               <X className="h-4 w-4" />
               <span>Clear All</span>
