@@ -10,7 +10,7 @@ const navigation = [
   { name: "Graph Explorer", href: "/graph", icon: Network },
   { name: "Tickets", href: "/tickets", icon: Ticket },
   { name: "Reports", href: "/reports", icon: BarChart3 },
-  { name: "Settings", href: "/settings/asset-types", icon: Settings },
+  { name: "Settings", href: "/settings", icon: Settings },
 ]
 
 export function Navigation() {

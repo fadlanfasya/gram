@@ -455,6 +455,7 @@ export type AssetRelationCreateOrConnectWithoutSourceAssetInput = {
 
 export type AssetRelationCreateManySourceAssetInputEnvelope = {
   data: Prisma.AssetRelationCreateManySourceAssetInput | Prisma.AssetRelationCreateManySourceAssetInput[]
+  skipDuplicates?: boolean
 }
 
 export type AssetRelationCreateWithoutTargetAssetInput = {
@@ -480,6 +481,7 @@ export type AssetRelationCreateOrConnectWithoutTargetAssetInput = {
 
 export type AssetRelationCreateManyTargetAssetInputEnvelope = {
   data: Prisma.AssetRelationCreateManyTargetAssetInput | Prisma.AssetRelationCreateManyTargetAssetInput[]
+  skipDuplicates?: boolean
 }
 
 export type AssetRelationUpsertWithWhereUniqueWithoutSourceAssetInput = {
@@ -1321,6 +1323,7 @@ export type AssetRelationCreateManyArgs<ExtArgs extends runtime.Types.Extensions
    * The data used to create many AssetRelations.
    */
   data: Prisma.AssetRelationCreateManyInput | Prisma.AssetRelationCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1339,6 +1342,7 @@ export type AssetRelationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * The data used to create many AssetRelations.
    */
   data: Prisma.AssetRelationCreateManyInput | Prisma.AssetRelationCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

@@ -564,6 +564,7 @@ export type ActivityCreateOrConnectWithoutUserInput = {
 
 export type ActivityCreateManyUserInputEnvelope = {
   data: Prisma.ActivityCreateManyUserInput | Prisma.ActivityCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type ActivityUpsertWithWhereUniqueWithoutUserInput = {
@@ -626,6 +627,7 @@ export type ActivityCreateOrConnectWithoutAssetInput = {
 
 export type ActivityCreateManyAssetInputEnvelope = {
   data: Prisma.ActivityCreateManyAssetInput | Prisma.ActivityCreateManyAssetInput[]
+  skipDuplicates?: boolean
 }
 
 export type ActivityUpsertWithWhereUniqueWithoutAssetInput = {
@@ -673,6 +675,7 @@ export type ActivityCreateOrConnectWithoutTicketInput = {
 
 export type ActivityCreateManyTicketInputEnvelope = {
   data: Prisma.ActivityCreateManyTicketInput | Prisma.ActivityCreateManyTicketInput[]
+  skipDuplicates?: boolean
 }
 
 export type ActivityUpsertWithWhereUniqueWithoutTicketInput = {
@@ -1580,6 +1583,7 @@ export type ActivityCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * The data used to create many Activities.
    */
   data: Prisma.ActivityCreateManyInput | Prisma.ActivityCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1598,6 +1602,7 @@ export type ActivityCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * The data used to create many Activities.
    */
   data: Prisma.ActivityCreateManyInput | Prisma.ActivityCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

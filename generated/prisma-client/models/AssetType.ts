@@ -1185,6 +1185,7 @@ export type AssetTypeCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data used to create many AssetTypes.
    */
   data: Prisma.AssetTypeCreateManyInput | Prisma.AssetTypeCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1203,6 +1204,7 @@ export type AssetTypeCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exten
    * The data used to create many AssetTypes.
    */
   data: Prisma.AssetTypeCreateManyInput | Prisma.AssetTypeCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**

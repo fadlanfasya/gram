@@ -492,6 +492,7 @@ export type CommentCreateOrConnectWithoutUserInput = {
 
 export type CommentCreateManyUserInputEnvelope = {
   data: Prisma.CommentCreateManyUserInput | Prisma.CommentCreateManyUserInput[]
+  skipDuplicates?: boolean
 }
 
 export type CommentUpsertWithWhereUniqueWithoutUserInput = {
@@ -545,6 +546,7 @@ export type CommentCreateOrConnectWithoutAssetInput = {
 
 export type CommentCreateManyAssetInputEnvelope = {
   data: Prisma.CommentCreateManyAssetInput | Prisma.CommentCreateManyAssetInput[]
+  skipDuplicates?: boolean
 }
 
 export type CommentUpsertWithWhereUniqueWithoutAssetInput = {
@@ -586,6 +588,7 @@ export type CommentCreateOrConnectWithoutTicketInput = {
 
 export type CommentCreateManyTicketInputEnvelope = {
   data: Prisma.CommentCreateManyTicketInput | Prisma.CommentCreateManyTicketInput[]
+  skipDuplicates?: boolean
 }
 
 export type CommentUpsertWithWhereUniqueWithoutTicketInput = {
@@ -1439,6 +1442,7 @@ export type CommentCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Comments.
    */
   data: Prisma.CommentCreateManyInput | Prisma.CommentCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1457,6 +1461,7 @@ export type CommentCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * The data used to create many Comments.
    */
   data: Prisma.CommentCreateManyInput | Prisma.CommentCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */
